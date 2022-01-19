@@ -13,7 +13,7 @@ const secret = process.env.TOKEN_SECRET || '';
  * @returns String
  */
 const tokenGenerate = (body) => {
-  return jwt.sign({ name: body.id }, secret, {
+  return jwt.sign({ id: body.id }, secret, {
     expiresIn: '1d',
   });
 };
@@ -29,6 +29,7 @@ const tokenGenerate = (body) => {
 const tokenValidate = (token) => {
   try {
     jwt.verify(token, secret);
+    return true;
   } catch (e) {
     return false;
   }
@@ -43,7 +44,8 @@ const tokenValidate = (token) => {
  * @returns ?string
  */
 const decodeUser = (token) => {
-  tokenValidate(token);
+  const tokenIsValid = tokenValidate(token);
+  if (!tokenIsValid) return null;
   const decoded = jwt.decode(token);
   if (typeof decoded === 'string' || decoded === null) return null;
   return decoded.id;
