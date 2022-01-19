@@ -1,14 +1,16 @@
+const mongoose = require('mongoose');
 const User = require('../db/users');
+const Tweet = require('../db/tweets');
 const { gen, compare } = require('../utils/hash');
 const { tokenGenerate } = require('../utils/token');
 
 const resolvers = {
   Query: {
     user: async (parent, args, context) => {
-      const {user} = context
+      const { user } = context;
       // validate user
-      if (!user?._id) throw new Error('User is not signed in')
-      
+      if (!user?._id) throw new Error('User is not signed in');
+
       // sign jwt
       const token = tokenGenerate({ id: user?._id });
 
@@ -50,6 +52,27 @@ const resolvers = {
 
       // return { user, jwt }
       return { user, jwt: token };
+    },
+    composeTweet: async (parent, args, context) => {
+      const { user } = context;
+      // validate user
+      if (!user?._id) throw new Error('User is not signed in');
+
+      // create tweet
+      const { message } = args;
+      const currentTime = new Date().toISOString();
+      const userObjectId = mongoose.Types.ObjectId(user._id);
+      const newTweet = await Tweet.create({
+        message,
+        date: currentTime,
+        user: userObjectId,
+      }).then((user) => user.toObject());
+
+      // return tweet
+      return {
+        ...newTweet,
+        user,
+      };
     },
   },
 };

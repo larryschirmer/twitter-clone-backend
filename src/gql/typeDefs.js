@@ -11,6 +11,12 @@ const typeDefs = gql`
     jwt: String
   }
 
+  type Tweet {
+    message: String
+    date: String
+    user: User
+  }
+
   type Query {
     user: UserCheckIn
   }
@@ -18,6 +24,7 @@ const typeDefs = gql`
   type Mutation {
     signUp(name: String, password: String): UserCheckIn
     signIn(name: String, password: String): UserCheckIn
+    composeTweet(message: String): Tweet
   }
 `;
 
