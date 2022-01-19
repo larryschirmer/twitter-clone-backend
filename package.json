@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "apollo-datasource-mongodb": "^0.5.2",
     "apollo-server": "^3.6.2",
     "bcrypt": "^5.0.1",
     "graphql": "^16.2.0",
