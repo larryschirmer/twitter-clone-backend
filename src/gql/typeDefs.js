@@ -17,9 +17,17 @@ const typeDefs = gql`
     user: User
   }
 
+  type Retweet {
+    _id: ID!
+    message: String
+    date: String
+    user: User
+  }
+
   type Tweet {
     _id: ID!
     message: String
+    retweet: Retweet
     date: String
     user: User
     comments: [Comment]
@@ -34,6 +42,7 @@ const typeDefs = gql`
     signIn(name: String, password: String): UserCheckIn
     composeTweet(message: String): Tweet
     commentTweet(tweetId: String, message: String): Tweet
+    reTweet(tweetId: String): Tweet
   }
 `;
 

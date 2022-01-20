@@ -101,16 +101,50 @@ const resolvers = {
           new: true,
         },
       )
+        .populate({ path: 'user', model: 'User' })
+        .populate({
+          path: 'retweet',
+          populate: { path: 'user', model: 'User' },
+        })
         .populate({
           path: 'comments',
           populate: { path: 'user', model: 'User' },
         })
         .lean();
 
-      console.log({ updatedTweet });
-
       // return updated tweet
       return updatedTweet;
+    },
+    reTweet: async (parent, args, context) => {
+      const { user } = context;
+      const { tweetId } = args;
+
+      // validate user
+      if (!user?._id) throw new Error('User is not signed in');
+
+      // verify tweet exists
+      const tweet = await Tweet.findById(tweetId).populate({ path: 'user', model: 'User' });
+      if (!tweet?._id) throw new Error('Tweet does not exist');
+
+      // verify tweet has message
+      if (!tweet.message || tweet.retweet) throw new Error('Tweet must be original');
+
+      // create tweet
+      const currentTime = new Date().toISOString();
+      const tweetObjectId = mongoose.Types.ObjectId(tweetId);
+      const userObjectId = mongoose.Types.ObjectId(user._id);
+      const newTweet = await Tweet.create({
+        retweet: tweetObjectId,
+        date: currentTime,
+        user: userObjectId,
+      }).then((user) => user.toObject());
+
+      // return tweet
+      return {
+        ...newTweet,
+        retweet: tweet,
+        user,
+      };
     },
   },
 };

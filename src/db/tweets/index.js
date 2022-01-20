@@ -8,7 +8,8 @@ const Comment = new Schema({
 });
 
 const TweetSchema = new Schema({
-  message: { type: String, required: true },
+  message: { type: String },
+  retweet: { type: Schema.Types.ObjectId, ref: 'Tweet' },
   date: { type: String, required: true },
   user: { type: Schema.Types.ObjectId, ref: 'User' },
   comments: { type: [Comment], default: [] },
