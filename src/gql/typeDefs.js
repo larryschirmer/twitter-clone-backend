@@ -11,10 +11,18 @@ const typeDefs = gql`
     jwt: String
   }
 
-  type Tweet {
+  type Comment {
     message: String
     date: String
     user: User
+  }
+
+  type Tweet {
+    _id: ID!
+    message: String
+    date: String
+    user: User
+    comments: [Comment]
   }
 
   type Query {
@@ -25,6 +33,7 @@ const typeDefs = gql`
     signUp(name: String, password: String): UserCheckIn
     signIn(name: String, password: String): UserCheckIn
     composeTweet(message: String): Tweet
+    commentTweet(tweetId: String, message: String): Tweet
   }
 `;
 

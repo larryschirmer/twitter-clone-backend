@@ -55,11 +55,12 @@ const resolvers = {
     },
     composeTweet: async (parent, args, context) => {
       const { user } = context;
+      const { message } = args;
+
       // validate user
       if (!user?._id) throw new Error('User is not signed in');
 
       // create tweet
-      const { message } = args;
       const currentTime = new Date().toISOString();
       const userObjectId = mongoose.Types.ObjectId(user._id);
       const newTweet = await Tweet.create({
@@ -73,6 +74,43 @@ const resolvers = {
         ...newTweet,
         user,
       };
+    },
+    commentTweet: async (parent, args, context) => {
+      const { user } = context;
+      const { tweetId, message } = args;
+
+      // validate user
+      if (!user?._id) throw new Error('User is not signed in');
+
+      // verify tweet exists
+      const tweet = await Tweet.findById(tweetId);
+      if (!tweet?._id) throw new Error('Tweet does not exist');
+
+      // comment
+      const currentTime = new Date().toISOString();
+      const userObjectId = mongoose.Types.ObjectId(user._id);
+      const newComment = {
+        message,
+        date: currentTime,
+        user: userObjectId,
+      };
+      const updatedTweet = await Tweet.findOneAndUpdate(
+        { _id: tweetId },
+        { $push: { comments: newComment } },
+        {
+          new: true,
+        },
+      )
+        .populate({
+          path: 'comments',
+          populate: { path: 'user', model: 'User' },
+        })
+        .lean();
+
+      console.log({ updatedTweet });
+
+      // return updated tweet
+      return updatedTweet;
     },
   },
 };
