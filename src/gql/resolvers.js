@@ -17,6 +17,23 @@ const resolvers = {
       // return { user, jwt }
       return { user, jwt: token };
     },
+    tweets: async (parent, args, context) => {
+      // get all the tweets
+      const tweets = Tweet.find()
+        .populate({ path: 'user', model: 'User' })
+        .populate({
+          path: 'retweet',
+          populate: { path: 'user', model: 'User' },
+        })
+        .populate({
+          path: 'comments',
+          populate: { path: 'user', model: 'User' },
+        })
+        .lean();
+
+      // return all the tweets
+      return tweets;
+    },
   },
   Mutation: {
     signUp: async (parent, args, context) => {
