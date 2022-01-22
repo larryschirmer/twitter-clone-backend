@@ -12,6 +12,7 @@ const typeDefs = gql`
   }
 
   type Comment {
+    _id: ID!
     message: String
     date: String
     user: User

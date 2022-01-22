@@ -20,6 +20,7 @@ const resolvers = {
     tweets: async (parent, args, context) => {
       // get all the tweets
       const tweets = Tweet.find()
+        .sort({ date: -1 })
         .populate({ path: 'user', model: 'User' })
         .populate({
           path: 'retweet',
